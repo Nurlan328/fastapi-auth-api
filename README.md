@@ -1,6 +1,8 @@
 # Auth API — a FastAPI learning project
 
-Registration, login, JWT tokens, and protected endpoints.
+Registration, login, JWT tokens, and protected endpoints, plus a React frontend.
+A [Django + DRF twin](https://github.com/Nurlan328/django-auth-api) implements the
+same API for comparison.
 
 ## Structure (by layers)
 
@@ -29,6 +31,7 @@ FastAPIProject/
 ├── tests/                  # pytest
 ├── alembic/                # DB migrations (versions/)
 ├── alembic.ini             # Alembic config
+├── frontend/               # React + Vite SPA (talks to this API)
 ├── docker-compose.yml      # postgres + redis + rabbitmq
 └── requirements.txt
 ```
@@ -81,6 +84,25 @@ python worker.py
 
 Register a user and watch the worker print the "sent" email.
 
+## Frontend
+
+A React + Vite single-page app lives in `frontend/` — registration, login,
+profile, and an admin view (user list + cached stats). The same app also works
+against the [Django twin](https://github.com/Nurlan328/django-auth-api); only
+`VITE_API_BASE` changes.
+
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:5173
+```
+
+Run the backend on http://127.0.0.1:8000 first (CORS already allows the dev
+server). Grant a user the admin role with `python make_admin.py <username>` to
+unlock the admin panel.
+
+<!-- Add a screenshot here, e.g.: ![screenshot](docs/screenshot.png) -->
+
 ## Tests
 
 ```bash
@@ -93,7 +115,7 @@ services.
 ## Stack
 
 Python 3.14 · FastAPI · SQLAlchemy · Alembic · PostgreSQL · Redis · RabbitMQ ·
-JWT · bcrypt · Docker · pytest
+JWT · bcrypt · Docker · pytest · React + Vite
 
 ## Ideas for further development
 

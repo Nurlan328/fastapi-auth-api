@@ -7,29 +7,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d04d41ae-b835-466f-b924-f58338a04654" name="Changes" comment="Initial commit: FastAPI Auth API&#10;&#10;JWT authentication service with a layered architecture&#10;(routers → services → repositories), wired via FastAPI Depends.&#10;&#10;- Auth: registration, OAuth2 password login, JWT (PyJWT) + bcrypt&#10;- RBAC: user/admin roles, protected and admin-only endpoints&#10;- Redis: cache-aside for stats + login rate limiting (async client)&#10;- RabbitMQ: welcome email as a background task, consumed by worker.py&#10;- Persistence: SQLAlchemy (PostgreSQL/SQLite) + Alembic migrations&#10;- Config: typed settings via pydantic-settings (.env)&#10;- Infra: Docker Compose (postgres + redis + rabbitmq)&#10;- Tests: 12 pytest cases on in-memory SQLite + fakeredis">
+    <list default="true" id="d04d41ae-b835-466f-b924-f58338a04654" name="Changes" comment="Translate project to English (docs, comments, API messages)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/broker.py" beforeDir="false" afterPath="$PROJECT_DIR$/broker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dependencies.py" beforeDir="false" afterPath="$PROJECT_DIR$/dependencies.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/make_admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/make_admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytest.ini" beforeDir="false" afterPath="$PROJECT_DIR$/pytest.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rate_limit.py" beforeDir="false" afterPath="$PROJECT_DIR$/rate_limit.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/redis_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repositories/user_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/user_repository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/auth.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/users.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/security.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/auth_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/user_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/user_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/worker.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +31,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Nurlan328"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Nurlan328/fastapi-auth-api.git",
+    "accountId": "ded89a27-6439-4e85-9d82-136b71887936"
+  }
+}]]></component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -215,7 +207,7 @@
       <option name="presentableId" value="Default" />
       <updated>1781633141753</updated>
       <workItem from="1781633142781" duration="3518000" />
-      <workItem from="1781637831705" duration="5073000" />
+      <workItem from="1781637831705" duration="7466000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit: FastAPI Auth API&#10;&#10;JWT authentication service with a layered architecture&#10;(routers → services → repositories), wired via FastAPI Depends.&#10;&#10;- Auth: registration, OAuth2 password login, JWT (PyJWT) + bcrypt&#10;- RBAC: user/admin roles, protected and admin-only endpoints&#10;- Redis: cache-aside for stats + login rate limiting (async client)&#10;- RabbitMQ: welcome email as a background task, consumed by worker.py&#10;- Persistence: SQLAlchemy (PostgreSQL/SQLite) + Alembic migrations&#10;- Config: typed settings via pydantic-settings (.env)&#10;- Infra: Docker Compose (postgres + redis + rabbitmq)&#10;- Tests: 12 pytest cases on in-memory SQLite + fakeredis">
       <option name="closed" value="true" />
@@ -225,7 +217,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781642597766</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Translate project to English (docs, comments, API messages)">
+      <option name="closed" value="true" />
+      <created>1781643498742</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1781643498742</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -244,7 +244,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit: FastAPI Auth API&#10;&#10;JWT authentication service with a layered architecture&#10;(routers → services → repositories), wired via FastAPI Depends.&#10;&#10;- Auth: registration, OAuth2 password login, JWT (PyJWT) + bcrypt&#10;- RBAC: user/admin roles, protected and admin-only endpoints&#10;- Redis: cache-aside for stats + login rate limiting (async client)&#10;- RabbitMQ: welcome email as a background task, consumed by worker.py&#10;- Persistence: SQLAlchemy (PostgreSQL/SQLite) + Alembic migrations&#10;- Config: typed settings via pydantic-settings (.env)&#10;- Infra: Docker Compose (postgres + redis + rabbitmq)&#10;- Tests: 12 pytest cases on in-memory SQLite + fakeredis" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial commit: FastAPI Auth API&#10;&#10;JWT authentication service with a layered architecture&#10;(routers → services → repositories), wired via FastAPI Depends.&#10;&#10;- Auth: registration, OAuth2 password login, JWT (PyJWT) + bcrypt&#10;- RBAC: user/admin roles, protected and admin-only endpoints&#10;- Redis: cache-aside for stats + login rate limiting (async client)&#10;- RabbitMQ: welcome email as a background task, consumed by worker.py&#10;- Persistence: SQLAlchemy (PostgreSQL/SQLite) + Alembic migrations&#10;- Config: typed settings via pydantic-settings (.env)&#10;- Infra: Docker Compose (postgres + redis + rabbitmq)&#10;- Tests: 12 pytest cases on in-memory SQLite + fakeredis" />
+    <MESSAGE value="Translate project to English (docs, comments, API messages)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Translate project to English (docs, comments, API messages)" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/FastAPIProject$FastAPIProject.coverage" NAME="FastAPIProject Coverage Results" MODIFIED="1781633186992" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
