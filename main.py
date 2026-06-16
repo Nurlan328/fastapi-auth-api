@@ -1,14 +1,14 @@
-"""Точка входа в приложение."""
+"""Application entry point."""
 from fastapi import FastAPI
 
 from routers import admin, auth, users
 
-# Таблицы больше НЕ создаём здесь через create_all.
-# Схемой управляет Alembic: перед запуском приложения выполни `alembic upgrade head`.
+# We no longer create tables here via create_all.
+# Alembic manages the schema: run `alembic upgrade head` before starting the app.
 
 app = FastAPI(
     title="Auth API",
-    description="Учебный проект: регистрация, логин, JWT, защищённые эндпоинты",
+    description="Learning project: registration, login, JWT, protected endpoints",
     version="1.0.0",
 )
 
@@ -19,4 +19,4 @@ app.include_router(admin.router)
 
 @app.get("/")
 def root():
-    return {"message": "Auth API работает. Открой /docs"}
+    return {"message": "Auth API is running. Open /docs"}

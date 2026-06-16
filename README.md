@@ -1,80 +1,104 @@
-# Auth API — учебный проект на FastAPI
+# Auth API — a FastAPI learning project
 
-Регистрация, логин, JWT-токены и защищённые эндпоинты.
+Registration, login, JWT tokens, and protected endpoints.
 
-## Структура (по слоям)
+## Structure (by layers)
 
 ```
 FastAPIProject/
-├── main.py                 # точка входа, подключение роутеров
-├── config.py               # типизированные настройки (pydantic-settings)
-├── database.py             # engine + сессии SQLAlchemy
-├── redis_client.py         # async-клиент Redis
-├── broker.py               # публикация задач в RabbitMQ (продюсер)
-├── worker.py               # консьюмер очереди (отдельный процесс)
-├── security.py             # хеширование паролей + JWT
-├── rate_limit.py           # ограничение частоты запросов (Redis)
+├── main.py                 # entry point, wiring the routers together
+├── config.py               # typed settings (pydantic-settings)
+├── database.py             # SQLAlchemy engine + sessions
+├── redis_client.py         # async Redis client
+├── broker.py               # publishing tasks to RabbitMQ (producer)
+├── worker.py               # queue consumer (separate process)
+├── security.py             # password hashing + JWT
+├── rate_limit.py           # request rate limiting (Redis)
 ├── dependencies.py         # get_current_user / get_current_admin
-├── models.py               # ORM-модели SQLAlchemy — таблицы БД
-├── schemas.py              # Pydantic-схемы — валидация и форма ответов
-├── repositories/           # доступ к данным (запросы к БД)
+├── models.py               # SQLAlchemy ORM models — DB tables
+├── schemas.py              # Pydantic schemas — validation and response shapes
+├── repositories/           # data access (DB queries)
 │   └── user_repository.py
-├── services/               # бизнес-логика
+├── services/               # business logic
 │   ├── auth_service.py
 │   └── user_service.py
-├── routers/                # HTTP-эндпоинты
+├── routers/                # HTTP endpoints
 │   ├── auth.py             # /auth/register, /auth/login
 │   ├── users.py            # /users/me
 │   └── admin.py            # /admin/users, /admin/stats
 ├── tests/                  # pytest
-├── alembic/                # миграции БД (versions/)
-├── alembic.ini             # конфиг Alembic
+├── alembic/                # DB migrations (versions/)
+├── alembic.ini             # Alembic config
 ├── docker-compose.yml      # postgres + redis + rabbitmq
 └── requirements.txt
 ```
 
-Поток запроса: **router → service → repository → БД**. Роутер не содержит
-SQL и бизнес-логики, репозиторий не знает про HTTP.
+Request flow: **router → service → repository → DB**. The router contains no
+SQL or business logic; the repository knows nothing about HTTP.
 
-## Запуск
+## Running
 
-1. Установить зависимости (в активированном .venv):
+1. Install dependencies (inside the activated .venv):
 
    ```bash
    pip install -r requirements.txt
    ```
 
-2. Поднять БД/брокеры и применить миграции:
+2. Start the databases/brokers and apply migrations:
 
    ```bash
    docker compose up -d        # postgres + redis + rabbitmq
-   alembic upgrade head        # создать/обновить схему БД (вместо create_all)
+   alembic upgrade head        # create/update the DB schema (instead of create_all)
    ```
 
-3. Запустить сервер:
+3. Start the server:
 
    ```bash
    fastapi dev main.py
    ```
 
-4. Открыть документацию: http://127.0.0.1:8000/docs
+4. Open the docs: http://127.0.0.1:8000/docs
 
-> Изменил модель? Создай новую миграцию:
-> `alembic revision --autogenerate -m "описание"` → затем `alembic upgrade head`.
+> Changed a model? Create a new migration:
+> `alembic revision --autogenerate -m "description"` → then `alembic upgrade head`.
 
-## Как проверить (в Swagger /docs)
+## How to try it (in Swagger /docs)
 
-1. **POST /auth/register** — создай пользователя (username, email, password).
-2. **POST /auth/login** — войди (или нажми зелёную кнопку **Authorize** сверху,
-   введи username/password). Получишь токен.
-3. **GET /users/me** — теперь работает: возвращает твои данные.
-   Без токена вернёт `401 Unauthorized`.
+1. **POST /auth/register** — create a user (username, email, password).
+2. **POST /auth/login** — log in (or click the green **Authorize** button at the
+   top and enter username/password). You get a token.
+3. **GET /users/me** — now works: returns your data.
+   Without a token it returns `401 Unauthorized`.
 
-## Что дальше (идеи для развития)
+## Background email worker
 
-- Добавить refresh-токены.
-- Полностью асинхронный слой БД (async SQLAlchemy + asyncpg).
-- CI/CD (GitLab CI / GitHub Actions): прогон тестов и линтера.
-- Мониторинг и логи (Prometheus, Grafana Loki, OpenTelemetry).
-- Тот же API на Django + DRF — для сравнения подходов.
+Registration publishes a "welcome email" task to RabbitMQ. A separate process
+consumes it:
+
+```bash
+python worker.py
 ```
+
+Register a user and watch the worker print the "sent" email.
+
+## Tests
+
+```bash
+pytest -v
+```
+
+The suite uses in-memory SQLite and fakeredis, so it needs no Docker or external
+services.
+
+## Stack
+
+Python 3.14 · FastAPI · SQLAlchemy · Alembic · PostgreSQL · Redis · RabbitMQ ·
+JWT · bcrypt · Docker · pytest
+
+## Ideas for further development
+
+- Refresh tokens.
+- A fully async DB layer (async SQLAlchemy + asyncpg).
+- CI/CD (GitLab CI / GitHub Actions): run tests and a linter.
+- Monitoring and logs (Prometheus, Grafana Loki, OpenTelemetry).
+- The same API on Django + DRF — to compare approaches.

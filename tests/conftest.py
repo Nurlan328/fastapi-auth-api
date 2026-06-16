@@ -1,14 +1,14 @@
-"""Общие фикстуры для тестов.
+"""Shared fixtures for tests.
 
-Главная идея тестирования FastAPI:
-1) подменяем зависимость get_db на тестовую БД (in-memory SQLite),
-2) поднимаем TestClient — он шлёт запросы в приложение без реального сервера.
-Так тесты быстрые, изолированные и не трогают настоящую базу.
+The core idea of testing FastAPI:
+1) override the get_db dependency with a test DB (in-memory SQLite),
+2) spin up a TestClient — it sends requests to the app without a real server.
+This makes tests fast, isolated, and untouched by the real database.
 """
 import os
 
-# Форсим in-memory SQLite ДО импорта приложения, чтобы тесты
-# не зависели от .env / Postgres и ничего не писали на диск.
+# Force in-memory SQLite BEFORE importing the app, so tests don't depend on
+# .env / Postgres and write nothing to disk.
 os.environ["DATABASE_URL"] = "sqlite://"
 
 import fakeredis.aioredis
@@ -26,11 +26,11 @@ from redis_client import get_redis
 
 @pytest.fixture
 def session_factory():
-    """Фабрика сессий к свежей in-memory БД (новая на каждый тест)."""
+    """A session factory for a fresh in-memory DB (new per test)."""
     engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
-        # StaticPool -> одно общее соединение, чтобы in-memory БД не исчезала
+        # StaticPool -> one shared connection so the in-memory DB doesn't vanish
         poolclass=StaticPool,
     )
     Base.metadata.create_all(bind=engine)
@@ -39,19 +39,19 @@ def session_factory():
 
 @pytest.fixture
 def fake_redis():
-    """In-memory подделка Redis на каждый тест (без реального сервера/Docker)."""
+    """An in-memory Redis fake per test (no real server/Docker)."""
     return fakeredis.aioredis.FakeRedis(decode_responses=True)
 
 
 @pytest.fixture
 def email_outbox():
-    """Список «отправленных» писем — вместо реальной публикации в RabbitMQ."""
+    """A list of "sent" emails — instead of real publishing to RabbitMQ."""
     return []
 
 
 @pytest.fixture
 def client(session_factory, fake_redis, email_outbox):
-    """TestClient с подменёнными на тестовые зависимостями get_db, get_redis, publisher."""
+    """TestClient with get_db, get_redis, and the publisher overridden for tests."""
 
     def override_get_db():
         db = session_factory()
@@ -64,7 +64,7 @@ def client(session_factory, fake_redis, email_outbox):
         return fake_redis
 
     def override_get_email_publisher():
-        # вместо публикации в RabbitMQ просто складываем сообщение в список
+        # instead of publishing to RabbitMQ, just append the message to a list
         return email_outbox.append
 
     app.dependency_overrides[get_db] = override_get_db

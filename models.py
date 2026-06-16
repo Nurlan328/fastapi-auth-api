@@ -1,4 +1,4 @@
-"""ORM-модели — описание таблиц в базе данных."""
+"""ORM models — description of the database tables."""
 from sqlalchemy import Column, DateTime, Integer, String, func
 
 from database import Base
@@ -10,9 +10,9 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
-    # Внимание: храним ТОЛЬКО хеш пароля, никогда не сам пароль!
+    # Note: we store ONLY the password hash, never the password itself!
     hashed_password = Column(String, nullable=False)
-    # Роль пользователя: "user" (обычный) или "admin".
-    # По умолчанию все регистрируются как "user" — самому стать админом нельзя.
+    # User role: "user" (regular) or "admin".
+    # Everyone registers as "user" by default — you can't make yourself an admin.
     role = Column(String, nullable=False, default="user", server_default="user")
     created_at = Column(DateTime(timezone=True), server_default=func.now())

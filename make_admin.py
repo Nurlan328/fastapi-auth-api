@@ -1,9 +1,9 @@
-"""Утилита: сделать пользователя админом.
+"""Utility: promote a user to admin.
 
-Проблема «первого админа»: эндпоинт /admin/* доступен только админу,
-но как создать самого первого? Через прямой доступ к БД — этим скриптом.
+The "first admin" problem: /admin/* endpoints are admin-only, but how do you
+create the very first one? Through direct DB access — with this script.
 
-Запуск:
+Run:
     python make_admin.py alice
 """
 import sys
@@ -18,16 +18,16 @@ def make_admin(username: str) -> None:
         users = UserRepository(db)
         user = users.get_by_username(username)
         if user is None:
-            print(f"Пользователь '{username}' не найден.")
+            print(f"User '{username}' not found.")
             return
         users.set_role(user, "admin")
-        print(f"Готово: '{username}' теперь admin.")
+        print(f"Done: '{username}' is now an admin.")
     finally:
         db.close()
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Использование: python make_admin.py <username>")
+        print("Usage: python make_admin.py <username>")
         sys.exit(1)
     make_admin(sys.argv[1])

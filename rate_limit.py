@@ -1,13 +1,13 @@
-"""Rate limiting (ограничение частоты запросов) через Redis.
+"""Rate limiting via Redis.
 
-Зачем: защита от перебора паролей (брутфорса) и злоупотреблений API.
-Это пункт «API Security» из требований.
+Why: protection against password brute-forcing and API abuse.
+This is the "API Security" requirement.
 
-Как работает (алгоритм "fixed window"):
-  - на каждый запрос увеличиваем счётчик в Redis по ключу IP+путь (INCR);
-  - при первом запросе ставим ключу время жизни (EXPIRE) = окно в секундах;
-  - если счётчик превысил лимит — отвечаем 429 Too Many Requests.
-Счётчик сам исчезает по истечении окна.
+How it works (fixed-window algorithm):
+  - on each request, increment a counter in Redis keyed by IP+path (INCR);
+  - on the first request, set the key's TTL (EXPIRE) = window in seconds;
+  - if the counter exceeds the limit, respond 429 Too Many Requests.
+The counter disappears on its own when the window expires.
 """
 from fastapi import Depends, HTTPException, Request, status
 from redis.asyncio import Redis
@@ -16,7 +16,7 @@ from redis_client import get_redis
 
 
 class RateLimiter:
-    """Зависимость-фабрика: RateLimiter(times=5, seconds=60) -> не больше 5 запросов в минуту."""
+    """Dependency factory: RateLimiter(times=5, seconds=60) -> at most 5 requests per minute."""
 
     def __init__(self, times: int, seconds: int):
         self.times = times
@@ -28,13 +28,13 @@ class RateLimiter:
 
         current = await redis.incr(key)
         if current == 1:
-            # это первый запрос в окне — заводим таймер на ключ
+            # first request in the window — start the key's timer
             await redis.expire(key, self.seconds)
 
         if current > self.times:
             ttl = await redis.ttl(key)
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail=f"Слишком много запросов. Попробуй через {ttl} сек.",
+                detail=f"Too many requests. Try again in {ttl} seconds.",
                 headers={"Retry-After": str(ttl)},
             )

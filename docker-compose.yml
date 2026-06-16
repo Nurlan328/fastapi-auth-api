@@ -7,11 +7,11 @@ services:
       POSTGRES_PASSWORD: app
       POSTGRES_DB: appdb
     ports:
-      # host:container. На хосте берём 5433, т.к. 5432 уже занят
-      # другим локальным Postgres. Внутри контейнера он по-прежнему 5432.
+      # host:container. We use 5433 on the host because 5432 is already taken
+      # by another local Postgres. Inside the container it is still 5432.
       - "5433:5432"
     volumes:
-      # данные сохраняются между перезапусками контейнера
+      # data persists across container restarts
       - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U app -d appdb"]
@@ -34,8 +34,8 @@ services:
     image: rabbitmq:3-management
     container_name: fastapi_auth_rabbitmq
     ports:
-      - "5672:5672"      # AMQP — сюда подключается приложение и воркер
-      - "15672:15672"    # веб-панель управления: http://localhost:15672 (guest/guest)
+      - "5672:5672"      # AMQP — the app and the worker connect here
+      - "15672:15672"    # management UI: http://localhost:15672 (guest/guest)
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s

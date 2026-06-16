@@ -7,26 +7,26 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# Чтобы из alembic/ были видны наши модули (config, database, models),
-# добавляем корень проекта в путь импорта.
+# So our modules (config, database, models) are importable from alembic/,
+# add the project root to the import path.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import settings  # noqa: E402
 from database import Base  # noqa: E402
-import models  # noqa: E402,F401  (импорт нужен, чтобы модель User попала в Base.metadata)
+import models  # noqa: E402,F401  (import needed so the User model lands in Base.metadata)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-# Берём строку подключения из наших настроек (.env), а не из alembic.ini.
+# Take the connection string from our settings (.env), not from alembic.ini.
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 # Interpret the config file for Python logging.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Метаданные моделей — отсюда autogenerate понимает, какие таблицы должны быть.
+# Model metadata — this is what autogenerate uses to know which tables should exist.
 target_metadata = Base.metadata
 
 

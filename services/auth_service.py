@@ -1,7 +1,7 @@
-"""Сервис аутентификации — бизнес-логика регистрации и логина.
+"""Authentication service — business logic for registration and login.
 
-Сервис НЕ знает про HTTP (про Request/Response) и НЕ пишет SQL напрямую.
-Он оркестрирует: дёргает репозиторий за данными и применяет правила.
+The service knows nothing about HTTP (Request/Response) and writes no SQL
+directly. It orchestrates: asks the repository for data and applies the rules.
 """
 from fastapi import Depends, HTTPException, status
 
@@ -19,7 +19,7 @@ class AuthService:
         if self.users.get_by_username_or_email(data.username, data.email):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Пользователь с таким именем или email уже существует",
+                detail="A user with this username or email already exists",
             )
         return self.users.create(
             username=data.username,
@@ -32,7 +32,7 @@ class AuthService:
         if not user or not verify_password(password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Неверное имя пользователя или пароль",
+                detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         access_token = create_access_token(data={"sub": user.username})
@@ -40,5 +40,5 @@ class AuthService:
 
 
 def get_auth_service(users: UserRepository = Depends(get_user_repository)) -> AuthService:
-    """Зависимость FastAPI — собирает сервис с нужным репозиторием."""
+    """FastAPI dependency — assembles the service with the needed repository."""
     return AuthService(users)

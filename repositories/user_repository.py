@@ -1,8 +1,8 @@
-"""Репозиторий пользователей — слой доступа к данным.
+"""User repository — the data-access layer.
 
-Здесь и ТОЛЬКО здесь живут запросы к БД (db.query...). Вся остальная часть
-приложения работает с пользователями через методы этого класса и не знает,
-что внутри SQLAlchemy. Захотим сменить БД — меняем только репозиторий.
+Database queries (db.query...) live here and ONLY here. The rest of the app
+works with users through this class's methods and doesn't know SQLAlchemy is
+inside. Want to switch the DB? Only the repository changes.
 """
 from fastapi import Depends
 from sqlalchemy.orm import Session
@@ -50,5 +50,5 @@ class UserRepository:
 
 
 def get_user_repository(db: Session = Depends(get_db)) -> UserRepository:
-    """Зависимость FastAPI — отдаёт репозиторий, привязанный к сессии запроса."""
+    """FastAPI dependency — returns a repository bound to the request's session."""
     return UserRepository(db)

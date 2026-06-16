@@ -1,4 +1,4 @@
-"""Роуты пользователей — пример ЗАЩИЩЁННОГО эндпоинта."""
+"""User routes — an example of a PROTECTED endpoint."""
 from fastapi import APIRouter, Depends
 
 import models
@@ -10,9 +10,9 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/me", response_model=schemas.UserOut)
 def read_me(current_user: models.User = Depends(get_current_user)):
-    """Вернуть данные текущего пользователя.
+    """Return the current user's data.
 
-    Сюда нельзя попасть без валидного токена — за это отвечает Depends(get_current_user).
-    Если токена нет или он плохой — FastAPI сам вернёт 401.
+    You can't get here without a valid token — that's what Depends(get_current_user)
+    enforces. With no token or a bad one, FastAPI returns 401 on its own.
     """
     return current_user

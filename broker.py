@@ -1,7 +1,7 @@
-"""RabbitMQ: публикация задач в очередь (это ПРОДЮСЕР).
+"""RabbitMQ: publishing tasks to a queue (this is the PRODUCER).
 
-Используем pika — синхронный клиент RabbitMQ. Публикация быстрая,
-поэтому её спокойно можно звать из обычного (sync) эндпоинта.
+We use pika — a synchronous RabbitMQ client. Publishing is fast, so it is
+fine to call it from a regular (sync) endpoint.
 """
 import json
 import logging
@@ -11,40 +11,39 @@ import pika
 from config import settings
 
 RABBITMQ_URL = settings.RABBITMQ_URL
-EMAIL_QUEUE = "emails"  # имя очереди, куда кладём задачи на отправку писем
+EMAIL_QUEUE = "emails"  # queue we drop "send email" tasks into
 
 logger = logging.getLogger(__name__)
 
 
 def publish_email(message: dict) -> None:
-    """Кладёт задачу «отправить письмо» в очередь.
+    """Drop a "send email" task into the queue.
 
-    На каждую публикацию открываем новое соединение — это просто и надёжно
-    для учебного проекта. В реальном проекте соединение переиспользуют,
-    т.к. открывать его каждый раз дорого.
+    We open a new connection per publish — simple and robust for a learning
+    project. Real apps reuse the connection, since opening one each time is costly.
     """
     try:
         connection = pika.BlockingConnection(pika.URLParameters(RABBITMQ_URL))
         try:
             channel = connection.channel()
-            # durable=True -> очередь переживёт перезапуск RabbitMQ
+            # durable=True -> the queue survives a RabbitMQ restart
             channel.queue_declare(queue=EMAIL_QUEUE, durable=True)
             channel.basic_publish(
                 exchange="",
                 routing_key=EMAIL_QUEUE,
                 body=json.dumps(message),
-                # delivery_mode=2 -> само сообщение тоже сохраняется на диск
+                # delivery_mode=2 -> the message itself is persisted to disk too
                 properties=pika.BasicProperties(delivery_mode=2),
             )
-            logger.info("Задача отправлена в очередь %s: %s", EMAIL_QUEUE, message)
+            logger.info("Task published to queue %s: %s", EMAIL_QUEUE, message)
         finally:
             connection.close()
     except Exception as exc:
-        # Брокер недоступен? Регистрацию из-за этого НЕ валим — просто логируем.
-        # (В проде тут был бы transactional outbox или ретраи.)
-        logger.warning("Не удалось опубликовать задачу в RabbitMQ: %s", exc)
+        # Broker unavailable? Don't fail registration because of it — just log.
+        # (In production this would be a transactional outbox or retries.)
+        logger.warning("Failed to publish task to RabbitMQ: %s", exc)
 
 
 def get_email_publisher():
-    """Зависимость FastAPI. В тестах подменяется на запись в список (без RabbitMQ)."""
+    """FastAPI dependency. Overridden in tests with a list append (no RabbitMQ)."""
     return publish_email

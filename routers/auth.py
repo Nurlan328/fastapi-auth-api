@@ -1,7 +1,7 @@
-"""Роуты аутентификации — HTTP-эндпоинты входа и регистрации.
+"""Authentication routes — HTTP endpoints for login and registration.
 
-Роутер тонкий: принимает запрос, зовёт сервис, возвращает ответ.
-Никакой бизнес-логики и SQL здесь нет — всё в service/repository.
+The router is thin: it takes the request, calls the service, returns the response.
+There is no business logic or SQL here — all of that lives in service/repository.
 """
 from fastapi import APIRouter, BackgroundTasks, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -21,11 +21,11 @@ def register(
     service: AuthService = Depends(get_auth_service),
     publish_email=Depends(get_email_publisher),
 ):
-    """Регистрация: бизнес-логику делает сервис, контроллер лишь оркеструет."""
+    """Registration: the service does the business logic, the route only orchestrates."""
     new_user = service.register(user)
 
-    # Планирование фоновой задачи — это HTTP-уровень (привязано к ответу),
-    # поэтому остаётся в контроллере, а не в сервисе.
+    # Scheduling a background task is an HTTP-level concern (tied to the response),
+    # so it stays in the route rather than the service.
     background_tasks.add_task(
         publish_email, {"to": new_user.email, "username": new_user.username}
     )
@@ -35,12 +35,12 @@ def register(
 @router.post(
     "/login",
     response_model=schemas.Token,
-    # Rate limit как зависимость роута: 5 попыток за 60 секунд (защита от брутфорса).
+    # Rate limit as a route dependency: 5 attempts per 60 seconds (brute-force protection).
     dependencies=[Depends(RateLimiter(times=5, seconds=60))],
 )
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     service: AuthService = Depends(get_auth_service),
 ):
-    """Логин: проверку пароля и выдачу токена делает сервис."""
+    """Login: the service checks the password and issues the token."""
     return service.login(form_data.username, form_data.password)

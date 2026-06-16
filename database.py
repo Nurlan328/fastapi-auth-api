@@ -1,29 +1,29 @@
-"""Подключение к базе данных через SQLAlchemy.
+"""Database connection via SQLAlchemy.
 
-Строка подключения берётся из настроек (config.settings.DATABASE_URL),
-которые читаются из .env / переменных окружения.
+The connection string comes from settings (config.settings.DATABASE_URL),
+which are read from .env / environment variables.
 """
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from config import settings
 
-# Аргумент check_same_thread нужен ТОЛЬКО для SQLite; для Postgres он не нужен.
+# check_same_thread is needed ONLY for SQLite; Postgres does not need it.
 connect_args = (
     {"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {}
 )
 
 engine = create_engine(settings.DATABASE_URL, connect_args=connect_args)
 
-# Фабрика сессий — через неё мы общаемся с БД
+# Session factory — we talk to the DB through it.
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Базовый класс для всех ORM-моделей
+# Base class for all ORM models.
 Base = declarative_base()
 
 
 def get_db():
-    """Зависимость: открывает сессию на время запроса и закрывает её."""
+    """Dependency: opens a session for the request and closes it afterwards."""
     db = SessionLocal()
     try:
         yield db

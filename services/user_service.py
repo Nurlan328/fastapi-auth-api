@@ -1,7 +1,7 @@
-"""Сервис пользователей — бизнес-логика для админских операций.
+"""User service — business logic for admin operations.
 
-Сюда вынесена в т.ч. логика кеширования статистики: роутеру про Redis знать
-незачем, он просто зовёт service.get_stats().
+This is also where the stats caching logic lives: the router doesn't need to
+know about Redis, it just calls service.get_stats().
 """
 import json
 
@@ -26,13 +26,13 @@ class UserService:
         return self.users.list_all()
 
     async def get_stats(self) -> dict:
-        """Статистика с кешированием (cache-aside). source = cache | db."""
+        """Stats with caching (cache-aside). source = cache | db."""
         cached = await self.redis.get(STATS_CACHE_KEY)
         if cached is not None:
             return {"source": "cache", **json.loads(cached)}
 
-        # repo.count — синхронный (блокирующий) вызов; в async уводим в пул потоков,
-        # чтобы не застопорить event loop.
+        # repo.count is a synchronous (blocking) call; in async we offload it to a
+        # thread pool so we don't stall the event loop.
         total = await run_in_threadpool(self.users.count)
         data = {"total_users": total}
         await self.redis.set(STATS_CACHE_KEY, json.dumps(data), ex=STATS_TTL_SECONDS)
