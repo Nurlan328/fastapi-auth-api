@@ -1,0 +1,13 @@
+fastapi[standard]
+sqlalchemy
+alembic
+pydantic[email]
+pydantic-settings
+python-dotenv
+pyjwt
+bcrypt
+psycopg[binary]
+redis
+pika
+pytest
+fakeredis

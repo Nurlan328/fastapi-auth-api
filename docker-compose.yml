@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:16
+    container_name: fastapi_auth_db
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: appdb
+    ports:
+      # host:container. На хосте берём 5433, т.к. 5432 уже занят
+      # другим локальным Postgres. Внутри контейнера он по-прежнему 5432.
+      - "5433:5432"
+    volumes:
+      # данные сохраняются между перезапусками контейнера
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d appdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: fastapi_auth_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: fastapi_auth_rabbitmq
+    ports:
+      - "5672:5672"      # AMQP — сюда подключается приложение и воркер
+      - "15672:15672"    # веб-панель управления: http://localhost:15672 (guest/guest)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
